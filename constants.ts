@@ -61,4 +61,8 @@ export const TRANSLATIONS: Record<string, Record<Language, string>> = {
   delete: { en: 'Delete', ar: 'حذف' },
   selectFiles: { en: 'Select File(s)', ar: 'اختر ملف / ملفات' },
   selectFile: { en: 'Select File', ar: 'اختر ملف' },
+  apiKeyMissingError: { en: 'Configuration Error: The API Key is not configured. Please contact the administrator to set it up.', ar: 'خطأ في الإعداد: مفتاح API غير مهيأ. يرجى الاتصال بالمسؤول لإعداده.' },
+  apiKeyMissingShort: { en: 'API Key not configured', ar: 'مفتاح API غير مهيأ' },
+  uploadCharacterTooltip: { en: 'Please upload at least one character image to continue.', ar: 'يرجى تحميل صورة شخصية واحدة على الأقل للمتابعة.' },
+  describeSceneTooltip: { en: 'Please describe the scene to continue.', ar: 'يرجى وصف المشهد للمتابعة.' },
 };

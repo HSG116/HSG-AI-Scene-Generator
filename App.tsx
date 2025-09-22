@@ -37,8 +37,16 @@ const Loader: React.FC<{ message: string }> = ({ message }) => (
     </div>
 );
 
+const WarningBanner: React.FC<{ message: string }> = ({ message }) => (
+    <div className="bg-yellow-600/20 border border-yellow-500/50 text-yellow-300 px-4 py-3 rounded-lg relative text-center mb-6 animate-fade-in" role="alert">
+        <strong className="font-bold">Warning: </strong>
+        <span className="block sm:inline">{message}</span>
+    </div>
+);
+
 
 const App: React.FC = () => {
+    const [isApiConfigured] = useState(!!process.env.API_KEY);
     const [language, setLanguage] = useState<Language>(Language.EN);
     
     const [characters, setCharacters] = useState<UploadedFile[]>([]);
@@ -60,10 +68,13 @@ const App: React.FC = () => {
     }, [language]);
     
     useEffect(() => {
+        if (!isApiConfigured) {
+             console.warn("API_KEY environment variable is not set. The application will not be able to generate scenes.");
+        }
         document.documentElement.lang = language;
         document.documentElement.dir = language === Language.AR ? 'rtl' : 'ltr';
         document.body.className = `bg-slate-900 text-slate-200 ${language === Language.AR ? 'font-arabic' : 'font-sans'}`;
-    }, [language]);
+    }, [language, isApiConfigured]);
     
     const getLabel = useCallback((options: Option[], value: string) => {
         return options.find(opt => opt.value === value)?.label[language] || value;
@@ -120,12 +131,21 @@ const App: React.FC = () => {
         }
     };
     
-    const isGenerateButtonDisabled = isLoading || characters.length === 0 || !sceneDescription;
+    const isGenerateButtonDisabled = !isApiConfigured || isLoading || characters.length === 0 || !sceneDescription;
+    
+    const generateButtonTooltip = useMemo(() => {
+        if (!isApiConfigured) return t('apiKeyMissingShort');
+        if (characters.length === 0) return t('uploadCharacterTooltip');
+        if (!sceneDescription) return t('describeSceneTooltip');
+        return '';
+    }, [isApiConfigured, characters.length, sceneDescription, t]);
 
     return (
         <div className="min-h-screen bg-slate-900 bg-gradient-to-br from-slate-900 to-gray-900 text-slate-300 p-4 sm:p-8">
             <div className="max-w-7xl mx-auto">
                 <Header language={language} setLanguage={setLanguage} t={t} />
+
+                {!isApiConfigured && <WarningBanner message={t('apiKeyMissingError')} />}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Column: Inputs */}
@@ -162,6 +182,7 @@ const App: React.FC = () => {
                         <button 
                             onClick={handleGenerateScene}
                             disabled={isGenerateButtonDisabled}
+                            title={generateButtonTooltip}
                             className={`w-full py-4 px-6 text-xl font-bold rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg ${isGenerateButtonDisabled ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-emerald-500 to-cyan-600 text-white hover:shadow-emerald-500/50 animate-pulse-glow'}`}
                         >
                             {isLoading ? t('generating') : t('generateScene')}
