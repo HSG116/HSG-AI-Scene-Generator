@@ -59,24 +59,22 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, files, onFiles
       <h3 className="text-lg font-semibold mb-2 text-emerald-300">{label}</h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         {files.map((file) => (
-          <div key={file.id} className="relative group animate-fade-in">
+          <div key={file.id} className="relative animate-fade-in">
             <img src={file.preview} alt={file.name} className="w-full h-32 object-cover rounded-lg shadow-md" />
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
-              <button
-                onClick={() => removeFile(file.id)}
-                className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-transform transform hover:scale-110"
-                aria-label={`Remove ${file.name}`}
-              >
-                <TrashIcon />
-              </button>
-            </div>
-             <input
-                type="text"
-                value={file.name}
-                onChange={(e) => onFileNameChange(file.id, e.target.value)}
-                placeholder={nameInputPlaceholder}
-                className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-md p-2 text-xs text-center"
-              />
+            <button
+              onClick={() => removeFile(file.id)}
+              className="absolute top-2 right-2 p-1.5 bg-red-600/80 text-white rounded-full backdrop-blur-sm hover:bg-red-500 transition-all transform hover:scale-110"
+              aria-label={`Remove ${file.name}`}
+            >
+              <TrashIcon className="w-4 h-4" />
+            </button>
+            <input
+              type="text"
+              value={file.name}
+              onChange={(e) => onFileNameChange(file.id, e.target.value)}
+              placeholder={nameInputPlaceholder}
+              className="w-full mt-2 bg-slate-700 border border-slate-600 rounded-md p-2 text-xs text-center focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+            />
           </div>
         ))}
       </div>
