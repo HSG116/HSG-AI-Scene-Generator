@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Modality } from "@google/genai";
 import { UploadedFile } from '../types';
 
@@ -12,10 +11,11 @@ const fileToGenerativePart = (file: UploadedFile) => {
 };
 
 export const generateScene = async (prompt: string, images: UploadedFile[]): Promise<string[]> => {
-  if (!process.env.API_KEY) {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
     throw new Error("API_KEY environment variable is not set. Please configure it in your deployment settings.");
   }
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey });
 
   try {
     const imageParts = images.map(fileToGenerativePart);
