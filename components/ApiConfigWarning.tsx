@@ -17,7 +17,7 @@ steps:
 - name: Build and Deploy
   # ... other settings
   env:
-    API_KEY: \${{ secrets.AIzaSyAiVsqlMSdZICkRwxsyKkyheDqskw9scb4 }} # <-- Add this line
+    API_KEY: \${{ secrets.API_KEY }} # <-- Add this line
   run: |
     npm install
     npm run build
