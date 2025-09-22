@@ -4,6 +4,7 @@ import { CAMERA_ANGLES, LIGHTING_STYLES, LENS_PERSPECTIVES, TRANSLATIONS, IMAGE_
 import { generateScene } from './services/geminiService';
 import ImageUploader from './components/ImageUploader';
 import SelectInput from './components/SelectInput';
+import ApiConfigWarning from './components/ApiConfigWarning';
 import { LanguageIcon } from './components/IconComponents';
 
 const Header: React.FC<{ language: Language; setLanguage: (lang: Language) => void; t: (key: string) => string; }> = ({ language, setLanguage, t }) => {
@@ -37,14 +38,6 @@ const Loader: React.FC<{ message: string }> = ({ message }) => (
     </div>
 );
 
-const WarningBanner: React.FC<{ message: string }> = ({ message }) => (
-    <div className="bg-yellow-600/20 border border-yellow-500/50 text-yellow-300 px-4 py-3 rounded-lg relative text-center mb-6 animate-fade-in" role="alert">
-        <strong className="font-bold">Warning: </strong>
-        <span className="block sm:inline">{message}</span>
-    </div>
-);
-
-
 const App: React.FC = () => {
     const [isApiConfigured] = useState(!!process.env.API_KEY);
     const [language, setLanguage] = useState<Language>(Language.EN);
@@ -64,7 +57,7 @@ const App: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     const t = useCallback((key: string): string => {
-        return TRANSLATIONS[key][language];
+        return TRANSLATIONS[key]?.[language] || key;
     }, [language]);
     
     useEffect(() => {
@@ -145,7 +138,7 @@ const App: React.FC = () => {
             <div className="max-w-7xl mx-auto">
                 <Header language={language} setLanguage={setLanguage} t={t} />
 
-                {!isApiConfigured && <WarningBanner message={t('apiKeyMissingError')} />}
+                {!isApiConfigured && <ApiConfigWarning t={t} />}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Column: Inputs */}
