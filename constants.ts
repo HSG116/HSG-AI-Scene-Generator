@@ -1,4 +1,3 @@
-
 import { Language, Option } from './types';
 
 export const CAMERA_ANGLES: Option[] = [
@@ -30,6 +29,12 @@ export const LENS_PERSPECTIVES: Option[] = [
   { value: 'telephoto', label: { en: 'Telephoto', ar: 'عدسة مقربة' } },
   { value: 'shallow-depth-of-field', label: { en: 'Shallow Depth of Field', ar: 'عمق ميدان ضحل' } },
   { value: 'deep-focus', label: { en: 'Deep Focus', ar: 'تركيز عميق' } },
+];
+
+export const IMAGE_COUNT_OPTIONS: Option[] = [
+  { value: '1', label: { en: '1', ar: '١' } },
+  { value: '2', label: { en: '2', ar: '٢' } },
+  { value: '3', label: { en: '3', ar: '٣' } },
 ];
 
 export const TRANSLATIONS: Record<string, Record<Language, string>> = {

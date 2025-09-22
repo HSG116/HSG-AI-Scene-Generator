@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { UploadedFile, Language, Option } from './types';
-import { CAMERA_ANGLES, LIGHTING_STYLES, LENS_PERSPECTIVES, TRANSLATIONS } from './constants';
+import { CAMERA_ANGLES, LIGHTING_STYLES, LENS_PERSPECTIVES, TRANSLATIONS, IMAGE_COUNT_OPTIONS } from './constants';
 import { generateScene } from './services/geminiService';
 import ImageUploader from './components/ImageUploader';
 import SelectInput from './components/SelectInput';
@@ -143,10 +142,13 @@ const App: React.FC = () => {
                             <SelectInput label={t('selectCamera')} value={cameraAngle} onChange={e => setCameraAngle(e.target.value)} options={CAMERA_ANGLES} language={language} />
                             <SelectInput label={t('selectLighting')} value={lightingStyle} onChange={e => setLightingStyle(e.target.value)} options={LIGHTING_STYLES} language={language} />
                             <SelectInput label={t('selectLens')} value={lensPerspective} onChange={e => setLensPerspective(e.target.value)} options={LENS_PERSPECTIVES} language={language} />
-                            <div>
-                                <h3 className="text-lg font-semibold mb-2 text-emerald-300">{t('imageCount')}</h3>
-                                <input type="number" min="1" max="5" value={imageCount} onChange={e => setImageCount(parseInt(e.target.value, 10))} className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300" />
-                            </div>
+                            <SelectInput
+                                label={t('imageCount')}
+                                value={imageCount.toString()}
+                                onChange={e => setImageCount(parseInt(e.target.value, 10))}
+                                options={IMAGE_COUNT_OPTIONS}
+                                language={language}
+                            />
                         </div>
                     </div>
                     
