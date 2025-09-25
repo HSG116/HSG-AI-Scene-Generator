@@ -10,11 +10,11 @@ const fileToGenerativePart = (file: UploadedFile) => {
   };
 };
 
-export const generateScene = async (prompt: string, images: UploadedFile[], apiKey: string): Promise<string[]> => {
-  if (!apiKey) {
-    throw new Error("API Key is missing. Please provide your API key to generate scenes.");
+export const generateScene = async (prompt: string, images: UploadedFile[]): Promise<string[]> => {
+  if (!process.env.API_KEY) {
+    throw new Error("API Key is not configured. Please set the API_KEY environment variable.");
   }
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
     const imageParts = images.map(fileToGenerativePart);
@@ -48,6 +48,30 @@ export const generateScene = async (prompt: string, images: UploadedFile[], apiK
     return generatedImages;
   } catch (error) {
     console.error("Error generating scene with Gemini API:", error);
-    throw new Error(`Failed to generate scene: ${error instanceof Error ? error.message : String(error)}`);
+
+    let finalErrorMessage = `Failed to generate scene: ${error instanceof Error ? error.message : String(error)}`;
+
+    if (error instanceof Error && error.message) {
+      try {
+        const errorJson = JSON.parse(error.message);
+        if (errorJson.error) {
+          const { message, status, details } = errorJson.error;
+          if (status === 'RESOURCE_EXHAUSTED') {
+            const retryDetail = details?.find((d: any) => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo');
+            const retryDelay = retryDetail?.retryDelay;
+            finalErrorMessage = 'API quota exceeded. Please check your plan and billing details.';
+            if (retryDelay) {
+              finalErrorMessage += ` You can try again in about ${retryDelay.replace('s', ' seconds')}.`;
+            }
+          } else {
+            finalErrorMessage = message || 'An unknown API error occurred.';
+          }
+        }
+      } catch (e) {
+        // It wasn't a JSON error message, so the default message is fine.
+      }
+    }
+    
+    throw new Error(finalErrorMessage);
   }
 };
