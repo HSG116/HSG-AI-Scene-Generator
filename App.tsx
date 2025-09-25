@@ -38,9 +38,9 @@ const Loader: React.FC<{ message: string }> = ({ message }) => (
 );
 
 const App: React.FC = () => {
-    const [isApiConfigured] = useState(!!process.env.API_KEY);
     const [language, setLanguage] = useState<Language>(Language.EN);
-    
+    const [apiKey, setApiKey] = useState(process.env.API_KEY || '');
+
     const [characters, setCharacters] = useState<UploadedFile[]>([]);
     const [locationImage, setLocationImage] = useState<UploadedFile[]>([]);
     const [styleImage, setStyleImage] = useState<UploadedFile[]>([]);
@@ -60,13 +60,10 @@ const App: React.FC = () => {
     }, [language]);
     
     useEffect(() => {
-        if (!isApiConfigured) {
-             console.warn("API_KEY environment variable is not set. The application will not be able to generate scenes.");
-        }
         document.documentElement.lang = language;
         document.documentElement.dir = language === Language.AR ? 'rtl' : 'ltr';
         document.body.className = `bg-slate-900 text-slate-200 ${language === Language.AR ? 'font-arabic' : 'font-sans'}`;
-    }, [language, isApiConfigured]);
+    }, [language]);
     
     const getLabel = useCallback((options: Option[], value: string) => {
         return options.find(opt => opt.value === value)?.label[language] || value;
@@ -112,7 +109,7 @@ const App: React.FC = () => {
             for (let i = 0; i < imageCount; i++) {
                 // A unique seed can help get different images if the API supports it
                 const promptWithSeed = `${combinedPrompt}\n**Variation Seed:** ${Date.now() + i}`;
-                const newImages = await generateScene(promptWithSeed, allImages);
+                const newImages = await generateScene(promptWithSeed, allImages, apiKey);
                 results.push(...newImages);
             }
             setGeneratedImages(results);
@@ -123,14 +120,14 @@ const App: React.FC = () => {
         }
     };
     
-    const isGenerateButtonDisabled = !isApiConfigured || isLoading || characters.length === 0 || !sceneDescription;
+    const isGenerateButtonDisabled = !apiKey || isLoading || characters.length === 0 || !sceneDescription;
     
     const generateButtonTooltip = useMemo(() => {
-        if (!isApiConfigured) return t('apiKeyMissingShort');
+        if (!apiKey) return t('apiKeyMissingShort');
         if (characters.length === 0) return t('uploadCharacterTooltip');
         if (!sceneDescription) return t('describeSceneTooltip');
         return '';
-    }, [isApiConfigured, characters.length, sceneDescription, t]);
+    }, [apiKey, characters.length, sceneDescription, t]);
 
     return (
         <div className="min-h-screen bg-slate-900 bg-gradient-to-br from-slate-900 to-gray-900 text-slate-300 p-4 sm:p-8">
@@ -140,6 +137,17 @@ const App: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Column: Inputs */}
                     <div className="space-y-8 p-6 bg-slate-800/50 rounded-2xl border border-slate-700 shadow-2xl">
+                        <div>
+                            <h3 className="text-lg font-semibold mb-2 text-emerald-300">{t('apiKeyLabel')}</h3>
+                            <input
+                                type="password"
+                                value={apiKey}
+                                onChange={e => setApiKey(e.target.value)}
+                                placeholder={t('apiKeyPlaceholder')}
+                                className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+                            />
+                        </div>
+
                         <ImageUploader id="characters" label={t('uploadCharacters')} files={characters} onFilesChange={setCharacters} onFileNameChange={handleFileNameChange(setCharacters)} multiple nameInputPlaceholder={t('characterName')} buttonText={t('selectFiles')} />
                         <div>
                             <h3 className="text-lg font-semibold mb-2 text-emerald-300">{t('sceneDescription')}</h3>

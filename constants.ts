@@ -61,7 +61,9 @@ export const TRANSLATIONS: Record<string, Record<Language, string>> = {
   delete: { en: 'Delete', ar: 'حذف' },
   selectFiles: { en: 'Select File(s)', ar: 'اختر ملف / ملفات' },
   selectFile: { en: 'Select File', ar: 'اختر ملف' },
-  apiKeyMissingShort: { en: 'API Key not configured', ar: 'مفتاح API غير مهيأ' },
+  apiKeyLabel: { en: 'Your API Key', ar: 'مفتاح API الخاص بك' },
+  apiKeyPlaceholder: { en: 'Your API key', ar: 'مفتاح API الخاص بك' },
+  apiKeyMissingShort: { en: 'Please enter your API key.', ar: 'الرجاء إدخال مفتاح API الخاص بك.' },
   uploadCharacterTooltip: { en: 'Please upload at least one character image to continue.', ar: 'يرجى تحميل صورة شخصية واحدة على الأقل للمتابعة.' },
   describeSceneTooltip: { en: 'Please describe the scene to continue.', ar: 'يرجى وصف المشهد للمتابعة.' },
 };

@@ -10,10 +10,9 @@ const fileToGenerativePart = (file: UploadedFile) => {
   };
 };
 
-export const generateScene = async (prompt: string, images: UploadedFile[]): Promise<string[]> => {
-  const apiKey = process.env.API_KEY;
+export const generateScene = async (prompt: string, images: UploadedFile[], apiKey: string): Promise<string[]> => {
   if (!apiKey) {
-    throw new Error("API_KEY environment variable is not set. Please configure it in your deployment settings.");
+    throw new Error("API Key is missing. Please provide your API key to generate scenes.");
   }
   const ai = new GoogleGenAI({ apiKey });
 
