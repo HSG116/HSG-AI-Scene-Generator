@@ -64,18 +64,4 @@ export const TRANSLATIONS: Record<string, Record<Language, string>> = {
   apiKeyMissingShort: { en: 'API Key not configured', ar: 'مفتاح API غير مهيأ' },
   uploadCharacterTooltip: { en: 'Please upload at least one character image to continue.', ar: 'يرجى تحميل صورة شخصية واحدة على الأقل للمتابعة.' },
   describeSceneTooltip: { en: 'Please describe the scene to continue.', ar: 'يرجى وصف المشهد للمتابعة.' },
-
-  // Vercel-specific translations
-  apiKeySetupIncompleteTitle: { en: 'Deployment Setup Incomplete (Vercel)', ar: 'إعداد النشر غير مكتمل (Vercel)' },
-  apiKeySetupP1: { en: 'Your application is deployed on Vercel, but it cannot connect to the Google AI servers.', ar: 'تطبيقك منشور على Vercel، لكنه لا يستطيع الاتصال بخوادم Google AI.' },
-  apiKeySetupP2: { en: 'To fix this, you must add your Google AI API Key as an Environment Variable in your Vercel project settings. This is a secure way to use your key without putting it in the code.', ar: 'لإصلاح هذا، يجب عليك إضافة مفتاح Google AI API الخاص بك كـ "متغير بيئة" في إعدادات مشروعك على Vercel. هذه طريقة آمنة لاستخدام مفتاحك دون وضعه في الكود.' },
-  apiKeySetupActionTitle: { en: 'How to Add Your API Key on Vercel', ar: 'كيفية إضافة مفتاح API الخاص بك على Vercel' },
-  apiKeySetupActionStep1: { en: '1. Go to your **Vercel Dashboard** and select your project.', ar: '١. اذهب إلى **لوحة تحكم Vercel** واختر مشروعك.' },
-  apiKeySetupActionStep2: { en: '2. Navigate to the **Settings** tab and click on **Environment Variables** in the side menu.', ar: '٢. انتقل إلى علامة التبويب **Settings** وانقر على **Environment Variables** في القائمة الجانبية.' },
-  apiKeySetupActionStep3: { en: '3. Add a new variable with the following details:', ar: '٣. أضف متغيراً جديداً بالتفاصيل التالية:' },
-  apiKeySetupActionStep4: { en: '4. **Save** the variable and then **re-deploy** your project to apply the new setting. You can do this from the **Deployments** tab by clicking "Redeploy" on the latest deployment.', ar: '٤. **احفظ** المتغير ثم قم **بإعادة نشر** مشروعك لتطبيق الإعداد الجديد. يمكنك القيام بذلك من علامة التبويب **Deployments** بالنقر على "Redeploy" في آخر عملية نشر.' },
-  apiKeySetupActionNote: { en: 'Once the new deployment is complete, your application will be able to connect to the Google AI services.', ar: 'بمجرد اكتمال النشر الجديد، سيتمكن تطبيقك من الاتصال بخدمات Google AI.' },
-  envVarName: { en: 'Name', ar: 'الاسم' },
-  envVarValue: { en: 'Value', ar: 'القيمة' },
-  envVarValuePlaceholder: { en: 'Paste your Google AI API key here', ar: 'الصق مفتاح Google AI API الخاص بك هنا' },
 };

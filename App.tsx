@@ -4,7 +4,6 @@ import { CAMERA_ANGLES, LIGHTING_STYLES, LENS_PERSPECTIVES, TRANSLATIONS, IMAGE_
 import { generateScene } from './services/geminiService';
 import ImageUploader from './components/ImageUploader';
 import SelectInput from './components/SelectInput';
-import ApiConfigWarning from './components/ApiConfigWarning';
 import { LanguageIcon } from './components/IconComponents';
 
 const Header: React.FC<{ language: Language; setLanguage: (lang: Language) => void; t: (key: string) => string; }> = ({ language, setLanguage, t }) => {
@@ -137,8 +136,6 @@ const App: React.FC = () => {
         <div className="min-h-screen bg-slate-900 bg-gradient-to-br from-slate-900 to-gray-900 text-slate-300 p-4 sm:p-8">
             <div className="max-w-7xl mx-auto">
                 <Header language={language} setLanguage={setLanguage} t={t} />
-
-                {!isApiConfigured && <ApiConfigWarning t={t} />}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Column: Inputs */}
