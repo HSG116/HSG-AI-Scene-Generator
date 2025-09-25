@@ -61,9 +61,6 @@ export const TRANSLATIONS: Record<string, Record<Language, string>> = {
   delete: { en: 'Delete', ar: 'حذف' },
   selectFiles: { en: 'Select File(s)', ar: 'اختر ملف / ملفات' },
   selectFile: { en: 'Select File', ar: 'اختر ملف' },
-  apiKeyLabel: { en: 'Your API Key', ar: 'مفتاح API الخاص بك' },
-  apiKeyPlaceholder: { en: 'Enter your Google Gemini API key', ar: 'أدخل مفتاح Google Gemini API الخاص بك' },
-  apiKeyMissingShort: { en: 'Please enter your API key to generate a scene.', ar: 'يرجى إدخال مفتاح API الخاص بك لإنشاء مشهد.' },
   uploadCharacterTooltip: { en: 'Please upload at least one character image to continue.', ar: 'يرجى تحميل صورة شخصية واحدة على الأقل للمتابعة.' },
   describeSceneTooltip: { en: 'Please describe the scene to continue.', ar: 'يرجى وصف المشهد للمتابعة.' },
 };

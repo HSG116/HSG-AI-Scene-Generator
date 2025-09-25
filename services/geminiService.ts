@@ -10,11 +10,8 @@ const fileToGenerativePart = (file: UploadedFile) => {
   };
 };
 
-export const generateScene = async (prompt: string, images: UploadedFile[], apiKey: string): Promise<string[]> => {
-  if (!apiKey) {
-    throw new Error("API Key is not provided. Please enter your API key.");
-  }
-  const ai = new GoogleGenAI({ apiKey });
+export const generateScene = async (prompt: string, images: UploadedFile[]): Promise<string[]> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
     const imageParts = images.map(fileToGenerativePart);
