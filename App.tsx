@@ -5,7 +5,6 @@ import { generateScene } from './services/geminiService';
 import ImageUploader from './components/ImageUploader';
 import SelectInput from './components/SelectInput';
 import { LanguageIcon } from './components/IconComponents';
-import ApiConfigWarning from './components/ApiConfigWarning';
 
 const Header: React.FC<{ language: Language; setLanguage: (lang: Language) => void; t: (key: string) => string; }> = ({ language, setLanguage, t }) => {
     const toggleLanguage = () => {
@@ -40,7 +39,7 @@ const Loader: React.FC<{ message: string }> = ({ message }) => (
 
 const App: React.FC = () => {
     const [language, setLanguage] = useState<Language>(Language.EN);
-    const isApiConfigured = useMemo(() => !!process.env.API_KEY, []);
+    const [apiKey, setApiKey] = useState('');
 
     const [characters, setCharacters] = useState<UploadedFile[]>([]);
     const [locationImage, setLocationImage] = useState<UploadedFile[]>([]);
@@ -110,7 +109,7 @@ const App: React.FC = () => {
             for (let i = 0; i < imageCount; i++) {
                 // A unique seed can help get different images if the API supports it
                 const promptWithSeed = `${combinedPrompt}\n**Variation Seed:** ${Date.now() + i}`;
-                const newImages = await generateScene(promptWithSeed, allImages);
+                const newImages = await generateScene(promptWithSeed, allImages, apiKey);
                 results.push(...newImages);
             }
             setGeneratedImages(results);
@@ -121,81 +120,89 @@ const App: React.FC = () => {
         }
     };
     
-    const isGenerateButtonDisabled = !isApiConfigured || isLoading || characters.length === 0 || !sceneDescription;
+    const isGenerateButtonDisabled = !apiKey || isLoading || characters.length === 0 || !sceneDescription;
     
     const generateButtonTooltip = useMemo(() => {
-        if (!isApiConfigured) return t('apiKeyMissingShort');
+        if (!apiKey) return t('apiKeyMissingShort');
         if (characters.length === 0) return t('uploadCharacterTooltip');
         if (!sceneDescription) return t('describeSceneTooltip');
         return '';
-    }, [isApiConfigured, characters.length, sceneDescription, t]);
+    }, [apiKey, characters.length, sceneDescription, t]);
 
     return (
         <div className="min-h-screen bg-slate-900 bg-gradient-to-br from-slate-900 to-gray-900 text-slate-300 p-4 sm:p-8">
             <div className="max-w-7xl mx-auto">
                 <Header language={language} setLanguage={setLanguage} t={t} />
 
-                {!isApiConfigured ? (
-                    <ApiConfigWarning t={t} />
-                ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Left Column: Inputs */}
-                        <div className="space-y-8 p-6 bg-slate-800/50 rounded-2xl border border-slate-700 shadow-2xl">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Left Column: Inputs */}
+                    <div className="space-y-8 p-6 bg-slate-800/50 rounded-2xl border border-slate-700 shadow-2xl">
 
-                            <ImageUploader id="characters" label={t('uploadCharacters')} files={characters} onFilesChange={setCharacters} onFileNameChange={handleFileNameChange(setCharacters)} multiple nameInputPlaceholder={t('characterName')} buttonText={t('selectFiles')} />
-                            <div>
-                                <h3 className="text-lg font-semibold mb-2 text-emerald-300">{t('sceneDescription')}</h3>
-                                <textarea value={sceneDescription} onChange={e => setSceneDescription(e.target.value)} placeholder={t('sceneDescriptionPlaceholder')} rows={4} className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"></textarea>
-                            </div>
-                            <ImageUploader id="location" label={t('uploadLocation')} files={locationImage} onFilesChange={setLocationImage} onFileNameChange={handleFileNameChange(setLocationImage)} nameInputPlaceholder={t('locationName')} buttonText={t('selectFile')} />
-                            <ImageUploader id="style" label={t('uploadStyle')} files={styleImage} onFilesChange={setStyleImage} onFileNameChange={handleFileNameChange(setStyleImage)} nameInputPlaceholder={t('styleName')} buttonText={t('selectFile')} />
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <SelectInput label={t('selectCamera')} value={cameraAngle} onChange={e => setCameraAngle(e.target.value)} options={CAMERA_ANGLES} language={language} />
-                                <SelectInput label={t('selectLighting')} value={lightingStyle} onChange={e => setLightingStyle(e.target.value)} options={LIGHTING_STYLES} language={language} />
-                                <SelectInput label={t('selectLens')} value={lensPerspective} onChange={e => setLensPerspective(e.target.value)} options={LENS_PERSPECTIVES} language={language} />
-                                <SelectInput
-                                    label={t('imageCount')}
-                                    value={imageCount.toString()}
-                                    onChange={e => setImageCount(parseInt(e.target.value, 10))}
-                                    options={IMAGE_COUNT_OPTIONS}
-                                    language={language}
-                                />
-                            </div>
+                        <div>
+                            <label htmlFor="apiKey" className="text-lg font-semibold mb-2 text-emerald-300">{t('apiKeyLabel')}</label>
+                            <input
+                                id="apiKey"
+                                type="password"
+                                value={apiKey}
+                                onChange={e => setApiKey(e.target.value)}
+                                placeholder={t('apiKeyPlaceholder')}
+                                className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+                            />
+                        </div>
+
+                        <ImageUploader id="characters" label={t('uploadCharacters')} files={characters} onFilesChange={setCharacters} onFileNameChange={handleFileNameChange(setCharacters)} multiple nameInputPlaceholder={t('characterName')} buttonText={t('selectFiles')} />
+                        <div>
+                            <h3 className="text-lg font-semibold mb-2 text-emerald-300">{t('sceneDescription')}</h3>
+                            <textarea value={sceneDescription} onChange={e => setSceneDescription(e.target.value)} placeholder={t('sceneDescriptionPlaceholder')} rows={4} className="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"></textarea>
+                        </div>
+                        <ImageUploader id="location" label={t('uploadLocation')} files={locationImage} onFilesChange={setLocationImage} onFileNameChange={handleFileNameChange(setLocationImage)} nameInputPlaceholder={t('locationName')} buttonText={t('selectFile')} />
+                        <ImageUploader id="style" label={t('uploadStyle')} files={styleImage} onFilesChange={setStyleImage} onFileNameChange={handleFileNameChange(setStyleImage)} nameInputPlaceholder={t('styleName')} buttonText={t('selectFile')} />
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <SelectInput label={t('selectCamera')} value={cameraAngle} onChange={e => setCameraAngle(e.target.value)} options={CAMERA_ANGLES} language={language} />
+                            <SelectInput label={t('selectLighting')} value={lightingStyle} onChange={e => setLightingStyle(e.target.value)} options={LIGHTING_STYLES} language={language} />
+                            <SelectInput label={t('selectLens')} value={lensPerspective} onChange={e => setLensPerspective(e.target.value)} options={LENS_PERSPECTIVES} language={language} />
+                            <SelectInput
+                                label={t('imageCount')}
+                                value={imageCount.toString()}
+                                onChange={e => setImageCount(parseInt(e.target.value, 10))}
+                                options={IMAGE_COUNT_OPTIONS}
+                                language={language}
+                            />
+                        </div>
+                    </div>
+                    
+                    {/* Right Column: Prompt & Output */}
+                    <div className="space-y-8">
+                        <div className="p-6 bg-slate-800/50 rounded-2xl border border-slate-700 shadow-2xl">
+                            <h3 className="text-lg font-semibold mb-2 text-emerald-300">{t('combinedPrompt')}</h3>
+                            <textarea value={combinedPrompt} onChange={e => setCombinedPrompt(e.target.value)} rows={10} className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm text-slate-400 font-mono focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"></textarea>
                         </div>
                         
-                        {/* Right Column: Prompt & Output */}
-                        <div className="space-y-8">
-                            <div className="p-6 bg-slate-800/50 rounded-2xl border border-slate-700 shadow-2xl">
-                                <h3 className="text-lg font-semibold mb-2 text-emerald-300">{t('combinedPrompt')}</h3>
-                                <textarea value={combinedPrompt} onChange={e => setCombinedPrompt(e.target.value)} rows={10} className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm text-slate-400 font-mono focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"></textarea>
-                            </div>
-                            
-                            <button 
-                                onClick={handleGenerateScene}
-                                disabled={isGenerateButtonDisabled}
-                                title={generateButtonTooltip}
-                                className={`w-full py-4 px-6 text-xl font-bold rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg ${isGenerateButtonDisabled ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-emerald-500 to-cyan-600 text-white hover:shadow-emerald-500/50 animate-pulse-glow'}`}
-                            >
-                                {isLoading ? t('generating') : t('generateScene')}
-                            </button>
-                            
-                            <div className="p-6 bg-slate-800/50 rounded-2xl border border-slate-700 shadow-2xl min-h-[300px]">
-                                <h3 className="text-2xl font-bold mb-4 text-center text-emerald-300">{t('results')}</h3>
-                                {isLoading && <Loader message={t('generating')} />}
-                                {error && <p className="text-red-400 text-center">{error}</p>}
-                                {!isLoading && !error && generatedImages.length === 0 && (
-                                    <p className="text-slate-500 text-center pt-10">{t('yourVisionAwaits')}</p>
-                                )}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {generatedImages.map((src, index) => (
-                                        <img key={index} src={src} alt={`Generated Scene ${index + 1}`} className="w-full h-auto object-cover rounded-lg shadow-md animate-fade-in"/>
-                                    ))}
-                                </div>
+                        <button 
+                            onClick={handleGenerateScene}
+                            disabled={isGenerateButtonDisabled}
+                            title={generateButtonTooltip}
+                            className={`w-full py-4 px-6 text-xl font-bold rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg ${isGenerateButtonDisabled ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-emerald-500 to-cyan-600 text-white hover:shadow-emerald-500/50 animate-pulse-glow'}`}
+                        >
+                            {isLoading ? t('generating') : t('generateScene')}
+                        </button>
+                        
+                        <div className="p-6 bg-slate-800/50 rounded-2xl border border-slate-700 shadow-2xl min-h-[300px]">
+                            <h3 className="text-2xl font-bold mb-4 text-center text-emerald-300">{t('results')}</h3>
+                            {isLoading && <Loader message={t('generating')} />}
+                            {error && <p className="text-red-400 text-center">{error}</p>}
+                            {!isLoading && !error && generatedImages.length === 0 && (
+                                <p className="text-slate-500 text-center pt-10">{t('yourVisionAwaits')}</p>
+                            )}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {generatedImages.map((src, index) => (
+                                    <img key={index} src={src} alt={`Generated Scene ${index + 1}`} className="w-full h-auto object-cover rounded-lg shadow-md animate-fade-in"/>
+                                ))}
                             </div>
                         </div>
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );
