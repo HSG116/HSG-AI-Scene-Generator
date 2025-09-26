@@ -11,7 +11,7 @@ const fileToGenerativePart = (file: UploadedFile) => {
 };
 
 export const generateScene = async (prompt: string, images: UploadedFile[]): Promise<string[]> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.AIzaSyCQUbOWuXVuIYN2qWkMnMfjuHczp7GTw2E });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
     const imageParts = images.map(fileToGenerativePart);
