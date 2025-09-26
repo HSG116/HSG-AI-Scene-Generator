@@ -70,4 +70,5 @@ export const TRANSLATIONS: Record<string, Record<Language, string>> = {
   envVarValuePlaceholder: { en: 'your_secret_key_here', ar: 'مفتاحك_السري_هنا' },
   apiKeySetupActionStep4: { en: '<strong>Save and redeploy</strong> your site for the change to take effect.', ar: '<strong>احفظ وأعد نشر</strong> موقعك لتطبيق التغييرات.' },
   apiKeySetupActionNote: { en: 'Note: Your API key is kept secret and is never exposed in the front-end code.', ar: 'ملاحظة: يتم الاحتفاظ بمفتاح API الخاص بك سريًا ولا يتم كشفه أبدًا في كود الواجهة الأمامية.' },
+  apiKeyMissingTooltip: { en: 'Please configure your API key by following the instructions above.', ar: 'يرجى تكوين مفتاح API الخاص بك باتباع الإرشادات أعلاه.' },
 };

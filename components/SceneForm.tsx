@@ -29,6 +29,7 @@ interface SceneFormProps {
     isGenerateDisabled: boolean;
     isLoading: boolean;
     handleGenerateScene: () => void;
+    isApiKeyMissing: boolean;
 }
 
 const FormSection: React.FC<{ title: string; children: React.ReactNode; step: number; }> = ({ title, children, step }) => (
@@ -48,7 +49,7 @@ const SceneForm: React.FC<SceneFormProps> = (props) => {
         setLocationImage, styleImage, setStyleImage, sceneDescription,
         setSceneDescription, cameraAngle, setCameraAngle, lightingStyle,
         setLightingStyle, lensPerspective, setLensPerspective, combinedPrompt,
-        isGenerateDisabled, isLoading, handleGenerateScene, language
+        isGenerateDisabled, isLoading, handleGenerateScene, language, isApiKeyMissing
     } = props;
 
     const handleFileNameChange = (setter: React.Dispatch<React.SetStateAction<UploadedFile[]>>) => (id: string, newName: string) => {
@@ -126,6 +127,7 @@ const SceneForm: React.FC<SceneFormProps> = (props) => {
                             : 'bg-gradient-to-r from-emerald-500 to-cyan-600 text-white hover:opacity-90 transform hover:scale-[1.02] shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40'
                         }`}
                     title={
+                        isApiKeyMissing ? t('apiKeyMissingTooltip') :
                         characters.length === 0 ? t('uploadCharacterTooltip') : 
                         !sceneDescription.trim() ? t('describeSceneTooltip') : ''
                     }

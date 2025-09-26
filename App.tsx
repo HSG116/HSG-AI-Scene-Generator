@@ -109,14 +109,14 @@ const App: React.FC = () => {
         }
     };
     
-    const isGenerateDisabled = characters.length === 0 || !sceneDescription.trim() || isLoading;
+    const isGenerateDisabled = isApiKeyMissing || characters.length === 0 || !sceneDescription.trim() || isLoading;
     
     const formProps = {
         language, t, getLabel, characters, setCharacters, locationImage,
         setLocationImage, styleImage, setStyleImage, sceneDescription,
         setSceneDescription, cameraAngle, setCameraAngle, lightingStyle,
         setLightingStyle, lensPerspective, setLensPerspective, combinedPrompt,
-        isGenerateDisabled, isLoading, handleGenerateScene,
+        isGenerateDisabled, isLoading, handleGenerateScene, isApiKeyMissing,
     };
     const resultsProps = { isLoading, error, generatedImages, t };
 
