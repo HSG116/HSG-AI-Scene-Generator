@@ -3,7 +3,6 @@ import { UploadedFile, Language, Option } from './types';
 import { CAMERA_ANGLES, LIGHTING_STYLES, LENS_PERSPECTIVES, TRANSLATIONS } from './constants';
 import { generateScene } from './services/geminiService';
 import { LanguageIcon } from './components/IconComponents';
-import ApiConfigWarning from './components/ApiConfigWarning';
 import SceneForm from './components/SceneForm';
 import ResultsDisplay from './components/ResultsDisplay';
 
@@ -124,8 +123,6 @@ const App: React.FC = () => {
         <div dir={language === Language.AR ? 'rtl' : 'ltr'} className={`min-h-screen ${language === Language.AR ? 'font-arabic' : 'font-sans'} transition-all duration-300`}>
             <main className="container mx-auto p-4 md:p-8">
                 <Header language={language} setLanguage={setLanguage} t={t} />
-
-                {isApiKeyMissing && <ApiConfigWarning t={t} />}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                     <SceneForm {...formProps} />
