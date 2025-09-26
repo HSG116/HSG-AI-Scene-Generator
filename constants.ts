@@ -31,28 +31,23 @@ export const LENS_PERSPECTIVES: Option[] = [
   { value: 'deep-focus', label: { en: 'Deep Focus', ar: 'تركيز عميق' } },
 ];
 
-export const IMAGE_COUNT_OPTIONS: Option[] = [
-  { value: '1', label: { en: '1', ar: '١' } },
-  { value: '2', label: { en: '2', ar: '٢' } },
-  { value: '3', label: { en: '3', ar: '٣' } },
-];
-
 export const TRANSLATIONS: Record<string, Record<Language, string>> = {
   headerTitle: { en: 'HSG AI Scene Generator', ar: 'HSG AI مولد المشاهد' },
   headerSubtitle: { en: 'Bring Your Cinematic Vision to Life', ar: 'أطلق العنان لرؤيتك السينمائية' },
-  uploadCharacters: { en: '1. Upload Character(s)', ar: '١. تحميل الشخصية (الشخصيات)' },
+  uploadCharacters: { en: 'Upload Character(s)', ar: 'تحميل الشخصية (الشخصيات)' },
   characterName: { en: 'Character Name', ar: 'اسم الشخصية' },
-  sceneDescription: { en: '2. Describe the Scene', ar: '٢. صف المشهد' },
+  sceneDescription: { en: 'Describe the Scene', ar: 'صف المشهد' },
   sceneDescriptionPlaceholder: { en: 'e.g., A detective looking at clues in a rainy alley at night.', ar: 'مثال: محقق ينظر إلى الأدلة في زقاق ممطر ليلاً.' },
-  uploadLocation: { en: '3. Upload Location (Optional)', ar: '٣. تحميل الموقع (اختياري)' },
+  uploadRefImages: { en: 'Upload Reference Images (Optional)', ar: 'تحميل صور مرجعية (اختياري)' },
+  uploadLocation: { en: 'Location Image', ar: 'صورة الموقع' },
   locationName: { en: 'Location Name', ar: 'اسم الموقع' },
-  uploadStyle: { en: '4. Upload Style Reference (Optional)', ar: '٤. تحميل مرجع النمط (اختياري)' },
+  uploadStyle: { en: 'Style Reference', ar: 'مرجع النمط' },
   styleName: { en: 'Style Name', ar: 'اسم النمط' },
-  selectCamera: { en: '5. Select Camera Angle', ar: '٥. اختر زاوية الكاميرا' },
-  selectLighting: { en: '6. Select Lighting Style', ar: '٦. اختر نمط الإضاءة' },
-  selectLens: { en: '7. Select Lens / Perspective', ar: '٧. اختر العدسة / المنظور' },
-  imageCount: { en: '8. Number of Images', ar: '٨. عدد الصور' },
-  combinedPrompt: { en: '9. Your Combined Prompt (Editable)', ar: '٩. مطالبتك المجمعة (قابلة للتعديل)' },
+  technicalDetails: { en: 'Set Technical Details', ar: 'تحديد التفاصيل الفنية' },
+  selectCamera: { en: 'Camera Angle', ar: 'زاوية الكاميرا' },
+  selectLighting: { en: 'Lighting Style', ar: 'نمط الإضاءة' },
+  selectLens: { en: 'Lens / Perspective', ar: 'العدسة / المنظور' },
+  combinedPrompt: { en: 'Final Generated Prompt', ar: 'المطالبة النهائية المولدة' },
   generateScene: { en: 'Generate Scene', ar: 'إنشاء المشهد' },
   generating: { en: 'Generating...', ar: 'جاري الإنشاء...' },
   results: { en: 'Results', ar: 'النتائج' },

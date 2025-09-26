@@ -4,7 +4,7 @@ import { UploadIcon, TrashIcon } from './IconComponents';
 
 interface ImageUploaderProps {
   id: string;
-  label: string;
+  label?: string;
   files: UploadedFile[];
   onFilesChange: (files: UploadedFile[]) => void;
   onFileNameChange: (id: string, newName: string) => void;
@@ -13,7 +13,6 @@ interface ImageUploaderProps {
   buttonText: string;
 }
 
-// FIX: Removed unused and malformed generic <T,> which was causing type inference issues downstream.
 const readFileAsBase64 = (file: File): Promise<{ preview: string, base64: string, mimeType: string }> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -33,7 +32,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, files, onFiles
   const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const fileList = Array.from(event.target.files);
-      // FIX: Explicitly type 'file' as 'File' to resolve type inference issues where it was being treated as 'unknown'.
       const newFilesPromises = fileList.map(async (file: File) => {
         const { preview, base64, mimeType } = await readFileAsBase64(file);
         return {
@@ -56,7 +54,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, files, onFiles
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-2 text-emerald-300">{label}</h3>
+      {label && <h3 className="text-lg font-semibold mb-2 text-emerald-300">{label}</h3>}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         {files.map((file) => (
           <div key={file.id} className="relative animate-fade-in">

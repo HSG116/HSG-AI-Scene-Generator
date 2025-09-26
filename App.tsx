@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { UploadedFile, Language, Option } from './types';
-import { CAMERA_ANGLES, LIGHTING_STYLES, LENS_PERSPECTIVES, TRANSLATIONS, IMAGE_COUNT_OPTIONS } from './constants';
+import { CAMERA_ANGLES, LIGHTING_STYLES, LENS_PERSPECTIVES, TRANSLATIONS } from './constants';
 import { generateScene } from './services/geminiService';
-import ImageUploader from './components/ImageUploader';
-import SelectInput from './components/SelectInput';
 import { LanguageIcon } from './components/IconComponents';
 import ApiConfigWarning from './components/ApiConfigWarning';
+import SceneForm from './components/SceneForm';
+import ResultsDisplay from './components/ResultsDisplay';
 
 const Header: React.FC<{ language: Language; setLanguage: (lang: Language) => void; t: (key: string) => string; }> = ({ language, setLanguage, t }) => {
     const toggleLanguage = () => {
@@ -15,33 +15,25 @@ const Header: React.FC<{ language: Language; setLanguage: (lang: Language) => vo
 
     return (
         <header className="text-center mb-10">
-            <div className="flex justify-center items-center mb-2">
+            <div className="flex justify-center items-center mb-2 gap-4">
+                <img src="https://i.postimg.cc/d3823YW9/1000069461.png" alt="HSG AI Logo" className="w-16 h-16 rounded-full border-2 border-emerald-500/50"/>
                 <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500">
                     {t('headerTitle')}
                 </h1>
-                <button onClick={toggleLanguage} className="ms-4 p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-700 transition-colors">
+                <button onClick={toggleLanguage} className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-700 transition-colors" aria-label="Toggle Language">
                     <LanguageIcon />
                 </button>
             </div>
-            <p className="text-slate-400">{t('headerSubtitle')}</p>
+            <p className="text-slate-400 text-lg">{t('headerSubtitle')}</p>
         </header>
     );
 };
-
-const Loader: React.FC<{ message: string }> = ({ message }) => (
-    <div className="flex flex-col items-center justify-center text-center p-8">
-        <svg className="animate-spin h-12 w-12 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="http://www.w3.org/2000/svg">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <p className="mt-4 text-lg font-semibold text-slate-300">{message}</p>
-    </div>
-);
 
 const App: React.FC = () => {
     const [language, setLanguage] = useState<Language>(Language.AR);
     const [isApiKeyMissing, setIsApiKeyMissing] = useState(false);
 
+    // Form State
     const [characters, setCharacters] = useState<UploadedFile[]>([]);
     const [locationImage, setLocationImage] = useState<UploadedFile[]>([]);
     const [styleImage, setStyleImage] = useState<UploadedFile[]>([]);
@@ -49,9 +41,9 @@ const App: React.FC = () => {
     const [cameraAngle, setCameraAngle] = useState(CAMERA_ANGLES[0].value);
     const [lightingStyle, setLightingStyle] = useState(LIGHTING_STYLES[0].value);
     const [lensPerspective, setLensPerspective] = useState(LENS_PERSPECTIVES[0].value);
-    const [imageCount, setImageCount] = useState(1);
     const [combinedPrompt, setCombinedPrompt] = useState('');
 
+    // Results State
     const [generatedImages, setGeneratedImages] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -61,8 +53,6 @@ const App: React.FC = () => {
     }, [language]);
     
     useEffect(() => {
-      // In a typical build setup, an unconfigured environment variable might be undefined.
-      // This check displays the warning if the API key seems to be missing.
       if (!process.env.API_KEY) {
           setIsApiKeyMissing(true);
       }
@@ -71,7 +61,7 @@ const App: React.FC = () => {
     useEffect(() => {
         document.documentElement.lang = language;
         document.documentElement.dir = language === Language.AR ? 'rtl' : 'ltr';
-        document.body.className = `bg-slate-900 text-slate-200 ${language === Language.AR ? 'font-arabic' : 'font-sans'}`;
+        document.body.className = `bg-slate-900 text-slate-200 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800/40 to-slate-900 ${language === Language.AR ? 'font-arabic' : 'font-sans'}`;
     }, [language]);
     
     const getLabel = useCallback((options: Option[], value: string) => {
@@ -80,31 +70,27 @@ const App: React.FC = () => {
 
     useEffect(() => {
         const buildPrompt = () => {
-            let prompt = `Generate a cinematic, high-resolution image based on the following specifications.\n`;
-            prompt += `**SCENE:** ${sceneDescription || 'Not specified'}\n`;
+            let prompt = `Generate a cinematic, high-resolution image.\n\n`;
+            prompt += `**SCENE:** ${sceneDescription || 'Not specified'}.\n`;
             
             if (characters.length > 0) {
-                prompt += `**CHARACTERS:**\n${characters.map(c => `- ${c.name}: See attached character reference.`).join('\n')}\n`;
+                const charNames = characters.map(c => `'${c.name}'`).join(', ');
+                prompt += `**CHARACTERS:** Featuring ${charNames}. Their appearance is defined by the attached reference images.\n`;
             }
             if (locationImage.length > 0) {
-                prompt += `**LOCATION:** Use the attached '${locationImage[0].name}' image as a reference.\n`;
+                prompt += `**LOCATION:** Use the attached '${locationImage[0].name}' image as the primary reference for the setting.\n`;
             }
             if (styleImage.length > 0) {
-                prompt += `**STYLE:** Emulate the cinematic look from the attached '${styleImage[0].name}' style reference.\n`;
+                prompt += `**AESTHETIC:** Emulate the visual style of the attached '${styleImage[0].name}' image.\n`;
             }
 
-            prompt += `**CAMERA & LENS:** ${getLabel(CAMERA_ANGLES, cameraAngle)}, using a ${getLabel(LENS_PERSPECTIVES, lensPerspective)} perspective.\n`;
-            prompt += `**LIGHTING:** ${getLabel(LIGHTING_STYLES, lightingStyle)}.`;
+            prompt += `**CAMERA:** ${getLabel(CAMERA_ANGLES, cameraAngle)} shot with a ${getLabel(LENS_PERSPECTIVES, lensPerspective)} perspective.\n`;
+            prompt += `**LIGHTING:** The scene is lit with ${getLabel(LIGHTING_STYLES, lightingStyle)} lighting.`;
 
             return prompt;
         };
         setCombinedPrompt(buildPrompt());
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [characters, locationImage, styleImage, sceneDescription, cameraAngle, lightingStyle, lensPerspective, language, getLabel]);
-
-    const handleFileNameChange = (setter: React.Dispatch<React.SetStateAction<UploadedFile[]>>) => (id: string, newName: string) => {
-        setter(prev => prev.map(file => file.id === id ? { ...file, name: newName } : file));
-    };
 
     const handleGenerateScene = async () => {
         setIsLoading(true);
@@ -112,3 +98,42 @@ const App: React.FC = () => {
         setGeneratedImages([]);
 
         const allImages = [...characters, ...locationImage, ...styleImage];
+        try {
+            const result = await generateScene(combinedPrompt, allImages);
+            setGeneratedImages(result);
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
+            setError(errorMessage.replace('Failed to generate scene:', '').trim());
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    const isGenerateDisabled = characters.length === 0 || !sceneDescription.trim() || isLoading;
+    
+    const formProps = {
+        language, t, getLabel, characters, setCharacters, locationImage,
+        setLocationImage, styleImage, setStyleImage, sceneDescription,
+        setSceneDescription, cameraAngle, setCameraAngle, lightingStyle,
+        setLightingStyle, lensPerspective, setLensPerspective, combinedPrompt,
+        isGenerateDisabled, isLoading, handleGenerateScene,
+    };
+    const resultsProps = { isLoading, error, generatedImages, t };
+
+    return (
+        <div dir={language === Language.AR ? 'rtl' : 'ltr'} className={`min-h-screen ${language === Language.AR ? 'font-arabic' : 'font-sans'} transition-all duration-300`}>
+            <main className="container mx-auto p-4 md:p-8">
+                <Header language={language} setLanguage={setLanguage} t={t} />
+
+                {isApiKeyMissing && <ApiConfigWarning t={t} />}
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    <SceneForm {...formProps} />
+                    <ResultsDisplay {...resultsProps} />
+                </div>
+            </main>
+        </div>
+    );
+};
+
+export default App;
